@@ -583,39 +583,6 @@ async fn verify_gpg_signature(file_path: String, signature_path: String, expecte
     })
 }
 
-#[derive(serde::Serialize, serde::Deserialize)]
-struct UpdateInfo {
-    version: String,
-    url: String,
-    body: String,
-}
-
-#[command]
-async fn check_for_updates() -> Result<UpdateInfo, String> {
-    let client = reqwest::Client::new();
-    let response = client
-        .get("https://api.github.com/repos/oop7/rhashsum/releases/latest")
-        .header("User-Agent", "rust-hash-sum")
-        .send()
-        .await
-        .map_err(|e| e.to_string())?;
-
-    let data: serde_json::Value = response.json().await.map_err(|e| e.to_string())?;
-
-    let latest_version = data["tag_name"].as_str().unwrap_or("").trim_start_matches('v');
-    let current_version = env!("CARGO_PKG_VERSION");
-
-    if latest_version > current_version {
-        Ok(UpdateInfo {
-            version: latest_version.to_string(),
-            url: data["html_url"].as_str().unwrap_or("").to_string(),
-            body: data["body"].as_str().unwrap_or("").to_string(),
-        })
-    } else {
-        Err("No new version available".to_string())
-    }
-}
-
 fn main() {
     let state = AppState { cancel: Arc::new(AtomicBool::new(false)) };
 
@@ -629,7 +596,6 @@ fn main() {
             save_report,
             verify_hash,
             verify_gpg_signature,
-            check_for_updates,
             is_path_file,
             cancel_hashing,
         ])
