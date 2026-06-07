@@ -34,7 +34,7 @@
         "rpm",
         "appimage"
       ],
-      "identifier": "com.hashsum.dev",
+      "identifier": "com.checksum.app",
       "windows": {
         "webviewInstallMode": {
           "type": "embedBootstrapper",
