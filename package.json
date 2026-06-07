@@ -1,7 +1,7 @@
 {
-  "name": "rust-hash-sum",
+  "name": "checksum",
   "private": true,
-  "version": "4.5.0",
+  "version": "1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
