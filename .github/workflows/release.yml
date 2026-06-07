@@ -111,7 +111,7 @@ jobs:
           set -e
           shopt -s globstar nullglob
           pushd release-assets > /dev/null
-          files=(**/*.exe **/*.msi **/*.deb **/*.rpm **/*.AppImage **/*.dmg **/*.app.zip)
+          files=(**/*.exe **/*.msi **/*.deb **/*.rpm **/*.AppImage **/*.dmg **/*.app.zip **/*.zip)
           if [ ${#files[@]} -gt 0 ]; then
             sha256sum "${files[@]}" > ../SHA256SUMS.txt
             echo "Generated SHA256SUMS.txt for ${#files[@]} files"
@@ -131,4 +131,5 @@ jobs:
             release-assets/**/*.AppImage
             release-assets/**/*.dmg
             release-assets/**/*.app.zip
+            release-assets/**/*.zip
             SHA256SUMS.txt
