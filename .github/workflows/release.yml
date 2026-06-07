@@ -70,6 +70,15 @@ jobs:
           else
             echo "No .app bundle found to zip"
           fi
+      - name: Package portable Windows exe
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem -Path src-tauri/target/release -Filter checksum.exe -File | Select-Object -First 1
+          if ($exe) {
+            Compress-Archive -Path $exe.FullName -DestinationPath src-tauri/target/release/CheckSum-portable.zip
+          }
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4.6.2
         with:
@@ -82,6 +91,7 @@ jobs:
             src-tauri/target/release/bundle/**/*.AppImage
             src-tauri/target/release/bundle/**/*.dmg
             src-tauri/target/release/bundle/**/*.app.zip
+            src-tauri/target/release/CheckSum-portable.zip
 
   release:
     name: Create GitHub Release (draft)
