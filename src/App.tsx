@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { invoke } from "@tauri-apps/api/tauri";
 import { open as openDialog, save } from '@tauri-apps/api/dialog';
-import { open as openExternal } from '@tauri-apps/api/shell';
 import { listen } from '@tauri-apps/api/event';
 import { invoke as invokeTauri } from '@tauri-apps/api/tauri';
 import { getVersion } from '@tauri-apps/api/app';
@@ -28,7 +27,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Link,
 } from "@mui/material";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -78,7 +76,6 @@ function App() {
   const [filePath, setFilePath] = useState("");
   const [folderPath, setFolderPath] = useState("");
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null); 
-  const [checkingUpdate, setCheckingUpdate] = useState(false);
   const [appVersion, setAppVersion] = useState('');
 
   useEffect(() => {
@@ -167,45 +164,9 @@ function App() {
     setAnchorEl(null);
   };
 
-  const handleCheckForUpdates = async () => {
-    handleMenuClose();
-    // show progress bar while we check
-    setCheckingUpdate(true);
-    try {
-      const updateInfo = await invoke("check_for_updates");
-      // If the updater returns an object when an update is available, treat that as update available.
-      // If it returns null/undefined or an empty value, treat as up-to-date.
-      if (!updateInfo) {
-        showAlert('Update Check', 'Your app is up to date.');
-      } else if (typeof updateInfo === 'object' && (updateInfo as any).version) {
-        showAlert('Update Available', `Update available: ${(updateInfo as any).version}`);
-      } else if (typeof updateInfo === 'string') {
-        // If a string is returned, display a minimal message (no changelog)
-        showAlert('Update Check', `Update check result: ${updateInfo}`);
-      } else {
-        showAlert('Update Check', 'Your app is up to date.');
-      }
-    } catch (error) {
-      // Some updater implementations may throw when there's no update; treat as up-to-date.
-      console.error('Update check failed', error);
-      showAlert('Update Check', 'Your app is up to date.');
-    } finally {
-      setCheckingUpdate(false);
-    }
-  };
-
   const handleAbout = () => {
     handleMenuClose();
     setAboutDialogOpen(true);
-  };
-
-  const handleSponsor = async () => {
-    handleMenuClose();
-    try {
-      await openExternal('https://github.com/sponsors/oop7');
-    } catch (error) {
-      showAlert('Sponsor', `Unable to open sponsor page: ${error}`);
-    }
   };
 
   return (
@@ -233,7 +194,6 @@ function App() {
             </Button>
           </Box>
           </Box>
-          {checkingUpdate && <LinearProgress sx={{ width: '100%' }} />}
           <Menu
             id="help-menu"
             anchorEl={anchorEl}
@@ -241,8 +201,6 @@ function App() {
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
           >
-            <MenuItem onClick={handleCheckForUpdates}>Check for Updates</MenuItem>
-            <MenuItem onClick={handleSponsor}>Sponsor</MenuItem>
             <MenuItem onClick={handleAbout}>About</MenuItem>
           </Menu>
         </Box>
@@ -260,17 +218,12 @@ function App() {
       {/* About Dialog */}
       <Dialog open={aboutDialogOpen} onClose={() => setAboutDialogOpen(false)} maxWidth="xs" fullWidth>
         <DialogTitle sx={{ textAlign: 'center' }}>
-          🔐 Rust Hash Sum {appVersion && `v${appVersion}`}
+          🔐 CheckSum {appVersion && `v${appVersion}`}
         </DialogTitle>
         <DialogContent>
           <Typography variant="body2" sx={{ mt: 1 }}>
-            • Author: <Link href="https://github.com/oop7" target="_blank" rel="noopener">oop7</Link><br/>
-            • Repository: <Link href="https://github.com/oop7/rhashsum" target="_blank" rel="noopener">github.com/oop7/rhashsum</Link><br/>
-            • Sponsor: <Link href="https://github.com/sponsors/oop7" target="_blank" rel="noopener">github.com/sponsors/oop7</Link>
-          </Typography>
-
-          <Typography variant="body2" sx={{ mt: 3, fontStyle: 'italic', textAlign: 'center' }}>
-            🛠️ Crafted for maximum speed, reliability, and developer ergonomics
+            A fast, private, offline file integrity tool.<br/>
+            Zero network calls. All hashing done locally.
           </Typography>
         </DialogContent>
         <DialogActions>
