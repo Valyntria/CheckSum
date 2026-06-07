@@ -6,8 +6,8 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "rust-hash-sum",
-    "version": "4.5.0"
+    "productName": "checksum",
+    "version": "1.0"
   },
   "tauri": {
     "allowlist": {
@@ -50,13 +50,13 @@
       ]
     },
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:"
     },
     "windows": [
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "rust-hash-sum",
+        "title": "checksum",
         "width": 800,
         "height": 600,
         "minWidth": 400,
